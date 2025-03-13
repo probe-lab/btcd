@@ -16,8 +16,8 @@ require (
 	github.com/jrick/logrotate v1.0.0
 	github.com/stretchr/testify v1.8.4
 	github.com/syndtr/goleveldb v1.0.1-0.20210819022825-2ae1ddf74ef7
-	golang.org/x/crypto v0.22.0
-	golang.org/x/sys v0.19.0
+	golang.org/x/crypto v0.35.0
+	golang.org/x/sys v0.30.0
 )
 
 require (
@@ -27,7 +27,7 @@ require (
 	github.com/kkdai/bstream v0.0.0-20161212061736-f391b8402d23 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/stretchr/objx v0.5.0 // indirect
-	golang.org/x/net v0.24.0 // indirect
+	golang.org/x/net v0.36.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
 
@@ -64,3 +64,4 @@ retract (
 )
 
 go 1.22
+toolchain go1.23.7
