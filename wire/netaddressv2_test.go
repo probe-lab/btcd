@@ -3,6 +3,7 @@ package wire
 import (
 	"bytes"
 	"io"
+	"net"
 	"testing"
 	"time"
 )
@@ -322,7 +323,7 @@ func TestReadNetAddressV2(t *testing.T) {
 				0x22,
 			},
 			string(i2p),
-			ErrSkippedNetworkID,
+			nil,
 		},
 
 		// Invalid cjdns size.
@@ -341,7 +342,26 @@ func TestReadNetAddressV2(t *testing.T) {
 				0x22,
 			},
 			string(cjdns),
-			ErrSkippedNetworkID,
+			nil,
+		},
+
+		// Invalid yggdrasil size.
+		{
+			[]byte{0x00, 0x00, 0x00, 0x00, 0x00, 0x07, 0x02},
+			"",
+			ErrInvalidAddressSize,
+		},
+
+		// Valid yggdrasil encoding.
+		{
+			[]byte{
+				0x00, 0x00, 0x00, 0x00, 0x00, 0x07, 0x10, 0x02,
+				0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20,
+				0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x22,
+				0x22,
+			},
+			string(yggdrasil),
+			nil,
 		},
 	}
 
@@ -366,6 +386,87 @@ func TestReadNetAddressV2(t *testing.T) {
 		if na.Addr.Network() != test.expectedNetwork {
 			t.Errorf("Test #%d had unexpected network %v", i,
 				na.Addr.Network())
+		}
+	}
+}
+
+// TestNetAddressV2Overlay tests that i2p, cjdns, and yggdrasil addresses
+// survive an encode and decode round trip, report their type, and print in
+// their usual text form.
+func TestNetAddressV2Overlay(t *testing.T) {
+	var i2pKey [i2pSize]byte
+	for i := range i2pKey {
+		i2pKey[i] = byte(i)
+	}
+
+	tests := []struct {
+		name        string
+		addr        net.Addr
+		isI2P       bool
+		isCJDNS     bool
+		isYggdrasil bool
+		str         string
+	}{
+		{
+			name:  "i2p",
+			addr:  &i2pAddr{addr: i2pKey, netID: i2p},
+			isI2P: true,
+			str:   "aaaqeayeaudaocajbifqydiob4ibceqtcqkrmfyydenbwha5dypq.b32.i2p",
+		},
+		{
+			name: "cjdns",
+			addr: &cjdnsAddr{
+				addr:  [cjdnsSize]byte{0xfc, 15: 0x01},
+				netID: cjdns,
+			},
+			isCJDNS: true,
+			str:     "fc00::1",
+		},
+		{
+			name: "yggdrasil",
+			addr: &yggdrasilAddr{
+				addr:  [yggdrasilSize]byte{0x02, 15: 0x01},
+				netID: yggdrasil,
+			},
+			isYggdrasil: true,
+			str:         "200::1",
+		},
+	}
+
+	for _, test := range tests {
+		na := &NetAddressV2{
+			Timestamp: time.Unix(0x495fab29, 0),
+			Services:  SFNodeNetwork,
+			Addr:      test.addr,
+			Port:      8333,
+		}
+
+		var buf bytes.Buffer
+		if err := writeNetAddressV2(&buf, 0, na); err != nil {
+			t.Fatalf("%s: write failed: %v", test.name, err)
+		}
+
+		decoded := &NetAddressV2{}
+		if err := readNetAddressV2(&buf, 0, decoded); err != nil {
+			t.Fatalf("%s: read failed: %v", test.name, err)
+		}
+
+		if decoded.IsI2P() != test.isI2P ||
+			decoded.IsCJDNS() != test.isCJDNS ||
+			decoded.IsYggdrasil() != test.isYggdrasil {
+
+			t.Errorf("%s: unexpected address type %T", test.name,
+				decoded.Addr)
+		}
+
+		if decoded.Addr.String() != test.str {
+			t.Errorf("%s: got address %q, want %q", test.name,
+				decoded.Addr.String(), test.str)
+		}
+
+		if decoded.Port != na.Port {
+			t.Errorf("%s: got port %d, want %d", test.name,
+				decoded.Port, na.Port)
 		}
 	}
 }
