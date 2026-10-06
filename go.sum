@@ -14,8 +14,6 @@ github.com/btcsuite/btcd/txscript/v2 v2.0.0 h1:pEmmHaC8eRx6KSB63zSVJD7qrit9/c9cL
 github.com/btcsuite/btcd/txscript/v2 v2.0.0/go.mod h1:pZXabc11Xr9nz/18kXY3yErdAajYc3gi28Zqb3KqlFo=
 github.com/btcsuite/btcd/v2transport v1.1.0 h1:njd4LQFXdq592zuRECMz5/X/4WWwa6mRPejc9UjL1M0=
 github.com/btcsuite/btcd/v2transport v1.1.0/go.mod h1:DGKT6nNiAbZPT3ihU99GUUxsSiTbipHHyLIlaNJsZR0=
-github.com/btcsuite/btcd/wire/v2 v2.0.1 h1:edmb35tvRyQpFp331L9PwZFccaTCOQwevSsU6ra4BR4=
-github.com/btcsuite/btcd/wire/v2 v2.0.1/go.mod h1:ENBpJL0JYUNlqvajhIFTOcWGNNumjCynDk4PL0OG58I=
 github.com/btcsuite/btclog v1.0.0 h1:sEkpKJMmfGiyZjADwEIgB1NSwMyfdD1FB8v6+w1T0Ns=
 github.com/btcsuite/btclog v1.0.0/go.mod h1:w7xnGOhwT3lmrS4H3b/D1XAXxvh+tbhUm8xeHN2y3TQ=
 github.com/btcsuite/go-socks v0.0.0-20170105172521-4720035b7bfd h1:R/opQEbFEy9JGkIguV40SvRY1uliPX8ifOvi6ICsFCw=
